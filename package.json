@@ -1,0 +1,42 @@
+{
+  "name": "restful-goose",
+  "version": "1.0.0",
+  "description": "Yet another RESTful microservice generator for Mongoose with an emphasis on flexibility",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joeyfromspace/restful-goose.git"
+  },
+  "keywords": [
+    "mongoose",
+    "plugin",
+    "mongodb",
+    "express",
+    "rest",
+    "api",
+    "microservice"
+  ],
+  "author": "Joey Lappin <joey@joeyfromspace.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joeyfromspace/restful-goose/issues"
+  },
+  "homepage": "https://github.com/joeyfromspace/restful-goose#readme",
+  "dependencies": {
+    "async": "2.0.0-rc.5",
+    "body-parser": "1.15.1",
+    "express": "4.13.4",
+    "lodash": "4.12.0",
+    "mongoose": "4.4.17",
+    "morgan": "1.7.0"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "chai-http": "2.0.1",
+    "faker": "3.1.0",
+    "mocha": "2.4.5"
+  }
+}
