@@ -42,10 +42,8 @@ describe('delete requests', function() {
 
   it('should delete an existing item on /:item DELETE', function(done) {
     var item = _.sample(items);
-    var update = { name: faker.name.firstName(), rank: faker.random.number() };
     chai.request(app)
       .delete('/' + item._id.toString())
-      .send(update)
       .end(function(err, res) {
         expect(res.status).to.equal(200);
         expect(res).to.be.json;

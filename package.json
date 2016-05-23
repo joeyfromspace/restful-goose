@@ -1,6 +1,6 @@
 {
   "name": "restful-goose",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Yet another RESTful microservice generator for Mongoose with an emphasis on flexibility",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/joeyfromspace/restful-goose.git"
+    "url": "https://github.com/joeyfromspace/restful-goose.git"
   },
   "keywords": [
     "mongoose",
