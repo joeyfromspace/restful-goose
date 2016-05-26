@@ -40,10 +40,10 @@ describe('delete requests', function() {
     });
   });
 
-  it('should delete an existing item on /:item DELETE', function(done) {
+  it('should delete an existing item on /tests/:item DELETE', function(done) {
     var item = _.sample(items);
     chai.request(app)
-      .delete('/' + item._id.toString())
+      .delete('/tests/' + item._id.toString())
       .end(function(err, res) {
         expect(res.status).to.equal(200);
         expect(res).to.be.json;

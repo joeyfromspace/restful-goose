@@ -24,19 +24,29 @@ var createTestModel = function(callback) {
     name: String,
     rank: Number
   });
+  var subschema = new mongoose.Schema({
+    name: String,
+    cool: Number,
+    test: { type: mongoose.Schema.Types.ObjectId, ref: 'Test' }
+  });
+
   mongoose.model('Test', schema);
+  mongoose.model('SubTest', subschema);
 
   return callback();
 };
 
 var createTestData = function(callback) {
+  var SubModel = mongoose.model('SubTest');
   var Model = mongoose.model('Test');
   var count = 0;
   var _create = function(next) {
     Model.create({ name: faker.name.firstName(), rank: faker.random.number() }, function(err, doc) {
       count++;
       testDocs.push(doc);
-      return next(err, count);
+      SubModel.create({name: faker.name.firstName(), cool: faker.random.number(), test: doc.id}, function (err) {
+        return next(err, count);
+      });
     });
   };
 
@@ -57,14 +67,18 @@ after(function(done) {
 describe('constructor tests', function() {
   it('should create an app for the test model', function(done) {
     var Model = mongoose.model('Test');
-    var app = restfulGoose(Model);
+    var app = restfulGoose(Model, {
+      subModels: ['SubTest']
+    });
 
     assert.isOk(app);
     done();
   });
   it('should listen for connections on specified port', function(done) {
     var Model = mongoose.model('Test');
-    var app = restfulGoose(Model);
+    var app = restfulGoose(Model, {
+      subModels: ['SubTest']
+    });
 
     app.listen(3000, function(err) {
       assert.isNotOk(err);

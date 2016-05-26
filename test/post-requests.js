@@ -41,17 +41,18 @@ describe('post requests', function() {
   });
 
   it('should create a new item on / POST', function(done) {
-    var data = { name: faker.name.firstName(), rank: faker.random.number() };
+    var data = { data: { attributes: { name: faker.name.firstName(), rank: faker.random.number() }}};
     chai.request(app)
-      .post('/')
+      .post('/tests')
       .send(data)
       .end(function(err, res) {
-        expect(res.status).to.equal(200);
+        expect(res.status).to.equal(201);
         expect(res).to.be.json;
         expect(res.body).to.be.a('object');
-        expect(res.body.name).to.equal(data.name);
-        expect(res.body.rank).to.equal(data.rank);
-        expect(res.body).to.have.property('_id');
+        expect(res.body).to.have.property('data');
+        expect(res.body.data.attributes.name).to.equal(data.data.attributes.name);
+        expect(res.body.data.attributes.rank).to.equal(data.data.attributes.rank);
+        expect(res.body.data).to.have.property('id');
         done();
       });
   });

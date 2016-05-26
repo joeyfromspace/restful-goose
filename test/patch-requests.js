@@ -14,7 +14,7 @@ var app;
 var items = [];
 var testItemCount = 10;
 
-describe('put requests', function() {
+describe('patch requests', function() {
   before(function (done) {
     var getRank = function () {
       return Math.floor(Math.random() * (3 - 1)) + 1;
@@ -40,21 +40,20 @@ describe('put requests', function() {
     });
   });
 
-  it('should update an existing item on /:item PUT', function(done) {
+  it('should update an existing item on /tests/:item PATCH', function(done) {
     var item = _.sample(items);
-    var update = { name: faker.name.firstName(), rank: faker.random.number() };
+    var update = { data: { attributes: { name: faker.name.firstName(), rank: faker.random.number() }}};
     chai.request(app)
-      .put('/' + item._id.toString())
+      .patch('/tests/' + item.id)
       .send(update)
       .end(function(err, res) {
         expect(res.status).to.equal(200);
         expect(res).to.be.json;
         expect(res.body).to.be.a('object');
-        expect(res.body.name).to.equal(update.name);
-        expect(res.body.rank).to.equal(update.rank);
-        expect(res.body._id).to.equal(item._id.toString());
+        expect(res.body.data.attributes.name).to.equal(update.data.attributes.name);
+        expect(res.body.data.attributes.rank).to.equal(update.data.attributes.rank);
+        expect(res.body.data.id).to.equal(item.id);
         done();
       });
   });
-
 });
