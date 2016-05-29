@@ -11,6 +11,7 @@ var _ = require('lodash');
 chai.use(chaiHttp);
 
 var app;
+var subApp;
 
 var items = [];
 var subitems = [];
@@ -26,6 +27,7 @@ describe('sub models', function() {
     app = restfulGoose(Model, {
       subModels: [ 'SubTest' ]
     });
+    subApp = restfulGoose(SubModel);
 
     var removeSubTests = function(next) {
       mongoose.model('SubTest').remove({}, next);
@@ -151,6 +153,23 @@ describe('sub models', function() {
         expect(res.body.data).to.have.property('id');
         expect(res.body.data.attributes.name).to.equal(data.name);
         expect(res.body.data.attributes.cool).to.equal(data.cool);
+        done();
+      });
+  });
+  
+  it('should create a new sub-item on /sub-tests POST', function(done) {
+    var parent = _.sample(items);
+    var request = { data: { attributes: { name: faker.name.firstName(), cool: faker.random.number() }, relationships: { test: { type: 'tests', id: parent.id }} }};
+    chai.request(subApp)
+      .post('/sub-tests')
+      .send(request)
+      .end(function(err, res) {
+        expect(res.status).to.equal(201);
+        expect(res).to.be.json;
+        expect(res.body).to.have.property('data');
+        expect(res.body.data).to.have.property('relationships');
+        expect(res.body.data.relationships.test.id).to.equal(parent.id);
+        expect(res.body.data).to.have.property('id');
         done();
       });
   });
