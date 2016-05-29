@@ -99,7 +99,9 @@ describe('sub models', function() {
         expect(res.body.data.length).to.be.at.least(1);
         expect(res.body.data[0]).have.property('relationships');
         expect(res.body.data[0]).to.have.property('attributes');
-        expect(res.body.data[0].relationships.test.id).to.equal(parent.id);
+        expect(res.body.data[0].relationships).have.property('test');
+        expect(res.body.data[0].relationships.test).have.property('data');
+        expect(res.body.data[0].relationships.test.data.id).to.equal(parent.id);
         done();
       });
   });
@@ -129,7 +131,9 @@ describe('sub models', function() {
         expect(res).to.be.json;
         expect(res.body).to.have.property('data');
         expect(res.body.data).to.have.property('relationships');
-        expect(res.body.data.relationships.test.id).to.equal(parent.id);
+        expect(res.body.data.relationships).to.have.property('test');
+        expect(res.body.data.relationships.test).to.have.property('data');
+        expect(res.body.data.relationships.test.data.id).to.equal(parent.id);
         expect(res.body.data).to.have.property('id');
         done();
       });
@@ -149,7 +153,9 @@ describe('sub models', function() {
         expect(res).to.be.json;
         expect(res.body).to.have.property('data');
         expect(res.body.data).to.have.property('relationships');
-        expect(res.body.data.relationships.test.id).to.equal(parent.id);
+        expect(res.body.data.relationships).to.have.property('test');
+        expect(res.body.data.relationships.test).to.have.property('data');
+        expect(res.body.data.relationships.test.data.id).to.equal(parent.id);
         expect(res.body.data).to.have.property('id');
         expect(res.body.data.attributes.name).to.equal(data.name);
         expect(res.body.data.attributes.cool).to.equal(data.cool);
@@ -159,7 +165,7 @@ describe('sub models', function() {
   
   it('should create a new sub-item on /sub-tests POST', function(done) {
     var parent = _.sample(items);
-    var request = { data: { attributes: { name: faker.name.firstName(), cool: faker.random.number() }, relationships: { test: { type: 'tests', id: parent.id }} }};
+    var request = { data: { attributes: { name: faker.name.firstName(), cool: faker.random.number() }, relationships: { test: { data: { type: 'tests', id: parent.id }} }}};
     chai.request(subApp)
       .post('/sub-tests')
       .send(request)
@@ -168,7 +174,7 @@ describe('sub models', function() {
         expect(res).to.be.json;
         expect(res.body).to.have.property('data');
         expect(res.body.data).to.have.property('relationships');
-        expect(res.body.data.relationships.test.id).to.equal(parent.id);
+        expect(res.body.data.relationships.test.data.id).to.equal(parent.id);
         expect(res.body.data).to.have.property('id');
         done();
       });
