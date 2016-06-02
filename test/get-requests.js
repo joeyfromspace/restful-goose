@@ -76,6 +76,26 @@ describe('get requests', function() {
     async.series([removeSubTests, removeTests, createTests, createSubTests], done);
   });
 
+  it('should return a specific object on /tests/:item GET when Content-Type is set to application/vnd.api+json', function(done) {
+    var item = _.head(items);
+    chai.request(app)
+      .get('/tests/' + item._id.toString())
+      .set('Content-Type', 'application/vnd.api+json')
+      .end(function(err, res) {
+        expect(res.status).to.equal(200);
+        expect(res).to.be.json;
+        expect(res.body).to.be.a('object');
+        expect(res.body).to.have.property('data');
+        expect(res.body.data).to.have.property('attributes');
+        expect(res.body.data).to.have.property('id');
+        expect(res.body.data).to.have.property('type');
+        expect(res.body.data.id).to.equal(item._id.toString());
+        expect(res.body.data.attributes.name).to.equal(item.name);
+        expect(res.body.data.attributes.rank).to.equal(item.rank);
+        done();
+      });
+  });
+  
   it('should return a specific object on /tests/:item GET', function(done) {
     var item = _.head(items);
     chai.request(app)

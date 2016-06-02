@@ -57,4 +57,23 @@ describe('post requests', function() {
       });
   });
 
+  it('should create a new item on / POST when Content-Type is set to application/vnd.api+json', function(done) {
+    var data = { data: { attributes: { name: faker.name.firstName(), rank: faker.random.number() }}};
+    chai.request(app)
+      .post('/tests')
+      .set('Content-Type', 'application/vnd.api+json')
+      .send(JSON.stringify(data))
+      .end(function(err, res) {
+        expect(res.status).to.equal(201);
+        expect(res).to.be.json;
+        expect(res.body).to.be.a('object');
+        expect(res.body).to.have.property('data');
+        expect(res.body.data.attributes.name).to.equal(data.data.attributes.name);
+        expect(res.body.data.attributes.rank).to.equal(data.data.attributes.rank);
+        expect(res.body.data).to.have.property('id');
+        done();
+      });
+  });
+
+
 });

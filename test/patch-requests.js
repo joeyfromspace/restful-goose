@@ -56,4 +56,22 @@ describe('patch requests', function() {
         done();
       });
   });
+
+  it('should update an existing item on /tests/:item PATCH and Content-Type is application/vnd.api+json', function(done) {
+    var item = _.sample(items);
+    var update = { data: { attributes: { name: faker.name.firstName(), rank: faker.random.number() }}};
+    chai.request(app)
+      .patch('/tests/' + item.id)
+      .set('Content-Type', 'application/vnd.api+json')
+      .send(JSON.stringify(update))
+      .end(function(err, res) {
+        expect(res.status).to.equal(200);
+        expect(res).to.be.json;
+        expect(res.body).to.be.a('object');
+        expect(res.body.data.attributes.name).to.equal(update.data.attributes.name);
+        expect(res.body.data.attributes.rank).to.equal(update.data.attributes.rank);
+        expect(res.body.data.id).to.equal(item.id);
+        done();
+      });
+  });
 });
