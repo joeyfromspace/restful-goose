@@ -41,7 +41,7 @@ describe('post requests', function() {
   });
 
   it('should create a new item on / POST', function(done) {
-    var data = { data: { attributes: { name: faker.name.firstName(), rank: faker.random.number() }}};
+    var data = { data: { attributes: { name: faker.name.firstName(), rank: faker.random.number(), "created-at": Date.now() }}};
     chai.request(app)
       .post('/tests')
       .send(data)
@@ -50,6 +50,7 @@ describe('post requests', function() {
         expect(res).to.be.json;
         expect(res.body).to.be.a('object');
         expect(res.body).to.have.property('data');
+        expect(Math.floor((new Date(res.body.data.attributes["created-at"])).getTime() / 1000)).to.equal(Math.floor((new Date(data.data.attributes['created-at'])).getTime() / 1000));
         expect(res.body.data.attributes.name).to.equal(data.data.attributes.name);
         expect(res.body.data.attributes.rank).to.equal(data.data.attributes.rank);
         expect(res.body.data).to.have.property('id');

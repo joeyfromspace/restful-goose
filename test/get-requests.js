@@ -90,6 +90,8 @@ describe('get requests', function() {
         expect(res.body.data).to.have.property('id');
         expect(res.body.data).to.have.property('type');
         expect(res.body.data.id).to.equal(item._id.toString());
+        expect(res.body.data.attributes).to.have.property('created-at');
+        expect((new Date(res.body.data.attributes['created-at'])).getTime()).to.equal(item.createdAt.getTime());
         expect(res.body.data.attributes.name).to.equal(item.name);
         expect(res.body.data.attributes.rank).to.equal(item.rank);
         done();

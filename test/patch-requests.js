@@ -42,7 +42,8 @@ describe('patch requests', function() {
 
   it('should update an existing item on /tests/:item PATCH', function(done) {
     var item = _.sample(items);
-    var update = { data: { attributes: { name: faker.name.firstName(), rank: faker.random.number() }}};
+    var newTime = item.createdAt.getTime() + 400000;
+    var update = { data: { attributes: { name: faker.name.firstName(), rank: faker.random.number(), 'created-at': newTime }}};
     chai.request(app)
       .patch('/tests/' + item.id)
       .send(update)
@@ -51,6 +52,7 @@ describe('patch requests', function() {
         expect(res).to.be.json;
         expect(res.body).to.be.a('object');
         expect(res.body.data.attributes.name).to.equal(update.data.attributes.name);
+        expect(Math.floor((new Date(res.body.data.attributes["created-at"])).getTime() / 1000)).to.equal(Math.floor((new Date(newTime).getTime() / 1000)));
         expect(res.body.data.attributes.rank).to.equal(update.data.attributes.rank);
         expect(res.body.data.id).to.equal(item.id);
         done();

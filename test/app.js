@@ -22,7 +22,8 @@ var connectDb = function(callback) {
 var createTestModel = function(callback) {
   var schema = new mongoose.Schema({
     name: String,
-    rank: Number
+    rank: Number,
+    createdAt: { type: Date, default: Date.now }
   });
   var subschema = new mongoose.Schema({
     name: String,
