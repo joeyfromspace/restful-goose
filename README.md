@@ -58,10 +58,11 @@ DELETE requests will be denied unless req.user is truthy.
 RESTful Goose comes with JSON API compliant error-handling out of the box. However, if you want to replace it with your own error-handling middleware, you can supply it in the `onError` option. The function is passed the request and response object as well as the error object that triggered the error.
 
 ### SubModels
-Nothing is populated by default and any associated objects are inaccessible. If you have a model that lives under another (for instance, comments that live in their own collection but are associated with an article object), you can supply an array of model names in the options' `subModels` property. These will automatically be mounted under /parent-model/:parent-id/sub-model/:sub-id.   
+Nothing is populated by default and any associated objects are inaccessible. If you have a model that lives under another (for instance, comments that live in their own collection but are associated with an article object), you can supply an array of model names in the options' `subModels` property. These will automatically be mounted under /parent-model/:parent-id/sub-model/:sub-id.
+
+### Custom Middleware
+Set custom middleware for each route by passing an object with the appropriate method key at the `middlewares` object. This function will be called after any authentication middleware. Handy for file uploads and other custom functions you want to inject before a route.
 
 ## TODO
-* Sub-schema support
-* Populate Source in error responses
 * Populate links in responses
 * Make more use of related and relationships objects in responses
