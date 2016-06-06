@@ -252,11 +252,26 @@ describe('get requests', function() {
         expect(res.status).to.equal(200);
         expect(res).to.be.json;
         expect(res.body).to.be.a('object');
-        expect(res.body).to.have.property('meta');
         expect(res.body).to.have.property('data');
-        expect(res.body.meta).to.have.property('limit');
-        expect(res.body.meta).to.have.property('skip');
-        expect(res.body.meta).to.have.property('count');
+        expect(res.body.meta.skip).to.equal(0);
+        expect(res.body.meta.count).to.equal(nameItems.length);
+        expect(res.body.data[0].attributes.name).to.equal(nameItems[0].name);
+        expect(res.body.data).to.be.a('array');
+        expect(res.body.data.length).to.equal(nameItems.length);
+        done();
+      });
+  });
+
+  it('should return documents partially matching a specific name on /?name=x GET (case insensitive)', function(done) {
+    var nameSample = _.sample(items).name;
+    var nameItems = _.chain(items).filter(function(i) { return i.name.indexOf(nameSample.substr(3).toLowerCase()) >= 0; }).value();
+    chai.request(app)
+      .get('/tests?name=' + nameSample.substr(3).toUpperCase())
+      .end(function(err, res) {
+        expect(res.status).to.equal(200);
+        expect(res).to.be.json;
+        expect(res.body).to.be.a('object');
+        expect(res.body).to.have.property('data');
         expect(res.body.meta.skip).to.equal(0);
         expect(res.body.meta.count).to.equal(nameItems.length);
         expect(res.body.data[0].attributes.name).to.equal(nameItems[0].name);
