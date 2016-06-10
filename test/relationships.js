@@ -121,7 +121,7 @@ describe('relationship tests', function() {
         expect(res.body).to.have.property('data');
         expect(res.body.data).to.not.have.property('relationships');
         expect(res.body.data).to.have.property('attributes');
-        expect(res.body.data.attributes).to.not.have.property('testTwos');
+        expect(res.body.data.attributes).to.not.have.property('test-twos');
         done();
       });
   });
