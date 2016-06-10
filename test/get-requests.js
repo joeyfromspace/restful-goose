@@ -22,7 +22,7 @@ describe('get requests', function() {
     };
     var Model = mongoose.model('Test');
     var SubModel = mongoose.model('SubTest');
-    var count = 0;
+
     app = restfulGoose(Model, {
       subModels: ['SubTest']
     });
@@ -222,9 +222,10 @@ describe('get requests', function() {
   });
 
   it('should return documents matching a specific name on /?name=x GET', function(done) {
-    var nameItems = _.chain(items).filter({ name: _.sample(items).name }).value();
+    var nameSample = _.sample(items).name;
+    var nameItems = _.chain(items).filter({ name: nameSample }).value();
     chai.request(app)
-      .get('/tests?name=' + nameItems[0].name)
+      .get('/tests?name=' + nameSample)
       .end(function(err, res) {
         expect(res.status).to.equal(200);
         expect(res).to.be.json;
@@ -244,10 +245,11 @@ describe('get requests', function() {
   });
 
   it('should return documents partially matching a specific name on /?name=x GET', function(done) {
-    var nameSample = _.sample(items).name;
-    var nameItems = _.chain(items).filter(function(i) { return i.name.indexOf(nameSample.substr(3).toLowerCase()) >= 0; }).value();
+    var nameSample = _.sample(items).name.substr(0, 3).toLowerCase();
+    var r = new RegExp(nameSample, 'i');
+    var nameItems = _.chain(items).filter(function(i) { return r.test(i.name); }).value();
     chai.request(app)
-      .get('/tests?name=' + nameSample.substr(3))
+      .get('/tests?name=' + nameSample)
       .end(function(err, res) {
         expect(res.status).to.equal(200);
         expect(res).to.be.json;
