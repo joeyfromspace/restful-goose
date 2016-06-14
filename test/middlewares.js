@@ -24,14 +24,14 @@ describe('middlewares GET', function() {
   before(function(done) {
     Model = mongoose.model('Test');
     SubModel = mongoose.model('SubTest');
-    app = restfulGoose(Model, {
-      middlewares: {
+    app = restfulGoose(mongoose.models, {}, { Test: {
+      middleware: {
         get: function (req, res, next) {
           res.set('middleware-called', 'true');
           return next();
         }
       }
-    });
+    }});
     
     done();
   });

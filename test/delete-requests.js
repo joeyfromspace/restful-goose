@@ -21,7 +21,7 @@ describe('delete requests', function() {
     };
     var Model = mongoose.model('Test');
     var count = 0;
-    app = restfulGoose(Model);
+    app = restfulGoose(mongoose.models);
 
     mongoose.model('Test').remove({}, function () {
       async.whilst(function () {

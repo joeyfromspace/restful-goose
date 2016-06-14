@@ -37,7 +37,7 @@ describe('relationship tests', function() {
     
     var RelTest = mongoose.model('RelTest');
     var RelTestTwo = mongoose.model('RelTestTwo');
-    app = restfulGoose(RelTest);
+    app = restfulGoose(mongoose.models);
 
     var removeRelTests = function(next) {
       mongoose.model('RelTest').remove({}, next);
@@ -139,6 +139,7 @@ describe('relationship tests', function() {
         expect(res.body.data).to.have.property('relationships');
         expect(res.body.data.relationships).to.have.property('test-twos');
         expect(res.body.data.relationships["test-twos"].data).to.be.a('array');
+        expect(res.body.data.relationships["test-twos"].links.self).to.equal('/rel-tests/' + item.id + '/relationships/test-twos');
         expect(res.body.data.relationships["test-twos"].data.length).to.equal(item.testTwos.length);
         expect(res.body.data.attributes).to.not.have.property('test-twos');
         done();

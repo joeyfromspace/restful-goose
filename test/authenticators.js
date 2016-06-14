@@ -24,14 +24,15 @@ describe('authenticator set GET', function() {
   before(function(done) {
     Model = mongoose.model('Test');
     SubModel = mongoose.model('SubTest');
-    app = restfulGoose(Model, {
-      authenticators: {
-        get: function (req, res, next) {
-          return res.status(401).json({error: 'Unauthorized', code: 'NOPE'});
-        }
+    app = restfulGoose(mongoose.models, {}, {
+      Test: {
+        authenticators: {
+          get: function (req, res, next) {
+            return res.status(401).json({error: 'Unauthorized', code: 'NOPE'});
+          }
+        },
+        subModels: ['SubTest']
       }
-    }, {
-      subModels: ['SubTest']
     });
     var getRank = function () {
       return Math.floor(Math.random() * (3 - 1)) + 1;
@@ -167,14 +168,13 @@ describe('authenticator set GET', function() {
 
 describe('authenticator set POST', function() {
   before(function(done) {
-    Model = mongoose.model('Test');
-    app = restfulGoose(Model, {
+    app = restfulGoose(mongoose.models, {}, { Test: {
       authenticators: {
         post: function (req, res, next) {
           return res.status(401).json({error: 'Unauthorized', code: 'NOPE'});
         }
       }
-    });
+    }});
     done();
   });
 
@@ -249,13 +249,13 @@ describe('authenticator set POST', function() {
 
 describe('authenticator set all', function() {
   before(function(done) {
-    app = restfulGoose(Model, {
+    app = restfulGoose(mongoose.models, {}, { Test: {
       authenticators: {
         all: function (req, res, next) {
           return res.status(401).json({error: 'Unauthorized', code: 'NOPE'});
         }
       }
-    });
+    }});
     done();
   });
   it('should respond with 401 unauthorized on / GET', function(done) {

@@ -11,7 +11,6 @@ var _ = require('lodash');
 chai.use(chaiHttp);
 
 var app;
-var subApp;
 
 var items = [];
 var subitems = [];
@@ -24,10 +23,9 @@ describe('sub models', function() {
     };
     var Model = mongoose.model('Test');
     var SubModel = mongoose.model('SubTest');
-    app = restfulGoose(Model, {
+    app = restfulGoose(mongoose.models, {}, { Test: {
       subModels: [ 'SubTest' ]
-    });
-    subApp = restfulGoose(SubModel);
+    }});
 
     var removeSubTests = function(next) {
       mongoose.model('SubTest').remove({}, next);
@@ -78,7 +76,7 @@ describe('sub models', function() {
     async.series([removeSubTests, removeTests, createTests, createSubTests], done);
   });
 
-  it('should return a list of sub-items associated with a parent item on /tests/:parent/sub-tests GET', function(done) {
+  it('should return a list of sub-items associated with a parent item on /tests/:parent/relationships/sub-tests GET', function(done) {
     var subSample = _.sample(subitems);
     var parent = _.find(items, function(p) {
       return p._id.equals(subSample.test);
@@ -87,7 +85,7 @@ describe('sub models', function() {
       return parent._id.equals(i.test);
     });
     chai.request(app)
-      .get('/tests/' + parent.id + '/sub-tests')
+      .get('/tests/' + parent.id + '/relationships/sub-tests')
       .end(function(err, res) {
         expect(res.status).to.equal(200);
         expect(res).to.be.json;
@@ -106,10 +104,10 @@ describe('sub models', function() {
       });
   });
 
-  it('should return a specific sub-item associated with a parent item on /tests/:parent/sub-tests/:sub-item GET', function(done) {
+  it('should return a specific sub-item associated with a parent item on /tests/:parent/relationships/sub-tests/:sub-item GET', function(done) {
     var subSample = _.sample(subitems);
     chai.request(app)
-      .get('/tests/' + subSample.test.toString() + '/sub-tests/' + subSample.id)
+      .get('/tests/' + subSample.test.toString() + '/relationships/sub-tests/' + subSample.id)
       .end(function(err, res) {
         expect(res.status).to.equal(200);
         expect(res).to.be.json;
@@ -120,11 +118,11 @@ describe('sub models', function() {
       });
   });
 
-  it('should create a new sub-item on /tests/:parent/sub-tests POST', function(done) {
+  it('should create a new sub-item on /tests/:parent/relationships/sub-tests POST', function(done) {
     var data = { name: faker.name.firstName(), cool: faker.random.number() };
     var parent = _.sample(items);
     chai.request(app)
-      .post('/tests/' + parent.id + '/sub-tests')
+      .post('/tests/' + parent.id + '/relationships/sub-tests')
       .send({ data: { attributes: data }})
       .end(function(err, res) {
         expect(res.status).to.equal(201);
@@ -139,14 +137,14 @@ describe('sub models', function() {
       });
   });
 
-  it('should update a sub-item on /tests/:parent/sub-tests/:sub-item PATCH', function(done) {
+  it('should update a sub-item on /tests/:parent/relationships/sub-tests/:sub-item PATCH', function(done) {
     var data = { name: faker.name.firstName(), cool: faker.random.number() };
     var subSample = _.sample(subitems);
     var parent = _.find(items, function(p) {
       return p._id.equals(subSample.test);
     });
     chai.request(app)
-      .patch('/tests/' + parent.id + '/sub-tests/' + subSample.id)
+      .patch('/tests/' + parent.id + '/relationships/sub-tests/' + subSample.id)
       .send({ data: { attributes: data }})
       .end(function(err, res) {
         expect(res.status).to.equal(200);
@@ -166,7 +164,7 @@ describe('sub models', function() {
   it('should create a new sub-item on /sub-tests POST', function(done) {
     var parent = _.sample(items);
     var request = { data: { attributes: { name: faker.name.firstName(), cool: faker.random.number() }, relationships: { test: { data: { type: 'tests', id: parent.id }} }}};
-    chai.request(subApp)
+    chai.request(app)
       .post('/sub-tests')
       .send(request)
       .end(function(err, res) {

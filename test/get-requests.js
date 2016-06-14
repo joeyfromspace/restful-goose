@@ -23,9 +23,9 @@ describe('get requests', function() {
     var Model = mongoose.model('Test');
     var SubModel = mongoose.model('SubTest');
 
-    app = restfulGoose(Model, {
+    app = restfulGoose(mongoose.models, {}, { Test: {
       subModels: ['SubTest']
-    });
+    }});
 
     var removeSubTests = function(next) {
       mongoose.model('SubTest').remove({}, next);
@@ -89,6 +89,9 @@ describe('get requests', function() {
         expect(res.body.data).to.have.property('attributes');
         expect(res.body.data).to.have.property('id');
         expect(res.body.data).to.have.property('type');
+        expect(res.body.data).to.have.property('links');
+        expect(res.body.data.links).to.have.property('self');
+        expect(res.body.data.links.self).to.equal('/tests/' + item._id.toString());
         expect(res.body.data.id).to.equal(item._id.toString());
         expect(res.body.data.attributes).to.have.property('created-at');
         expect((new Date(res.body.data.attributes['created-at'])).getTime()).to.equal(item.createdAt.getTime());

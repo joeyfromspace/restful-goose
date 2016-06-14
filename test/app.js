@@ -67,18 +67,16 @@ after(function(done) {
 
 describe('constructor tests', function() {
   it('should create an app for the test model', function(done) {
-    var Model = mongoose.model('Test');
-    var app = restfulGoose(Model, {
-      subModels: ['SubTest']
+    var app = restfulGoose(mongoose.models, {}, {
+      "Test": { subModels: ['SubTest'] }
     });
 
     assert.isOk(app);
     done();
   });
   it('should listen for connections on specified port', function(done) {
-    var Model = mongoose.model('Test');
-    var app = restfulGoose(Model, {
-      subModels: ['SubTest']
+    var app = restfulGoose(mongoose.models, {}, {
+      "Test": { subModels: ['SubTest'] }
     });
 
     app.listen(3000, function(err) {

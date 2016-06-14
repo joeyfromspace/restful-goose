@@ -2,6 +2,9 @@
 
 Yet another RESTful microservice generator for Mongoose with an emphasis on flexibility. This API uses the [JSON API spec](http://jsonapi.org/) and supports optional child models.
 
+# Version 1.3.0 Breaking Changes
+The constructor now is global, accepting an array of models instead of single models. This allows greater extensibility in the code and greatly simplifies implementation, forcing all APIs to conform to one common schema.
+
 ## Installation
 ```
 npm install restful-goose
@@ -17,13 +20,14 @@ var app = express();
 
 var mySchema = new mongoose.Schema({});
 mongoose.model('Article', mySchema);
+mongoose.model('Comment', commentSchema);
 
-var api = restfulGoose(mongoose.model('Article'), { subModels: ['Comment'] });
+var api = restfulGoose(mongoose.models, { mountPath: 'http://myapi.com/api' }, { Article: { subModels: ['Comment'] }});
 
 app.use('/api', api);
 ```
 
-This will mount the model under /api/articles and comments under /api/articles/comments.
+This will mount the model under /api/articles and comments under /api/articles/relationships/comments.
 
 ## Supported Methods
 As per the JSON API spec, the following methods are supported: GET, POST, PATCH, DELETE. Use PATCH to update objects instead of PUT by including only those parameters you would like to update.
@@ -36,18 +40,20 @@ Optional middleware can be set on a per-method basis to allow or deny access to 
 Example:
 ```
 var options = {
-    authenticators: {
-        delete: function(req, res, next) {
-            if (req.user) {
-                return next();
+    Article: {
+        authenticators: {
+            delete: function(req, res, next) {
+                if (req.user) {
+                    return next();
+                }
+
+                res.status(403).json({ errors: [{ title: 'Unauthorized', detail: 'You do not have access to this resource', status: 403 }]);
             }
-            
-            res.status(403).json({ errors: [{ title: 'Unauthorized', detail: 'You do not have access to this resource', status: 403 }]);
         }
     }
 };
 
-var api = restfulGoose(Article, options); 
+var api = restfulGoose(mongoose.models, {}, options);
 
 app.use('/api', api);
 ```
