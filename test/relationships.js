@@ -115,7 +115,6 @@ describe('relationship tests', function() {
     chai.request(app)
       .get('/rel-tests/' + emptyItem.id)
       .end(function(err, res) {
-        console.log(res.body.data);
         expect(res).to.be.json;
         expect(res.status).to.equal(200);
         expect(res.body).to.have.property('data');
