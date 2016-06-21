@@ -101,18 +101,6 @@ describe('get requests', function() {
       });
   });
   
-  it('should have the correct mount path in link on /tests GET', function(done) {
-    var mp = 'http://localhost:3000/api/cool';
-    var newApp = restfulGoose(mongoose.models, { mountPath: mp });
-    chai.request(newApp)
-      .get('/tests')
-      .end(function(err, res) {
-        expect(res.status).to.equal(200);
-        expect(res.body.data[0].links.self).to.equal(mp + '/tests/' + res.body.data[0].id);
-        done();
-      });
-  });
-  
   it('should return a specific object on /tests/:item GET', function(done) {
     var item = _.head(items);
     chai.request(app)
