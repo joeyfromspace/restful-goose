@@ -45,8 +45,7 @@ describe('delete requests', function() {
     chai.request(app)
       .delete('/tests/' + item._id.toString())
       .end(function(err, res) {
-        expect(res.status).to.equal(200);
-        expect(res).to.be.json;
+        expect(res.status).to.equal(204);
         expect(res.body).to.be.empty;
         done();
       });

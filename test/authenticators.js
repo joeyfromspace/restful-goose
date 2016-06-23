@@ -152,13 +152,12 @@ describe('authenticator set GET', function() {
         done();
       });
   });
-  it('should respond with 200 success on /:item DELETE', function(done) {
+  it('should respond with 204 success on /:item DELETE', function(done) {
     var item = _.sample(items);
     chai.request(app)
       .delete('/tests/' + item._id.toString())
       .end(function(err, res) {
-        expect(res.status).to.equal(200);
-        expect(res).to.be.json;
+        expect(res.status).to.equal(204);
         expect(res.body).to.be.empty;
         items.splice(_.findIndex(items, item), 1);
         done();
@@ -233,13 +232,12 @@ describe('authenticator set POST', function() {
         done();
       });
   });
-  it('should respond with 200 success on /:item DELETE', function(done) {
+  it('should respond with 204 success on /:item DELETE', function(done) {
     var item = _.sample(items);
     chai.request(app)
       .delete('/tests/' + item._id.toString())
       .end(function(err, res) {
-        expect(res.status).to.equal(200);
-        expect(res).to.be.json;
+        expect(res.status).to.equal(204);
         expect(res.body).to.be.empty;
         items.splice(_.findIndex(items, item), 1);
         done();
