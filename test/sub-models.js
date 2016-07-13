@@ -64,7 +64,7 @@ describe('sub models', function() {
         };
         Model.create(data, function (err, doc) {
           if (err) {
-            console.error(err);
+            return n(err);
           }
           count++;
           items.push(doc);

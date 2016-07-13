@@ -75,7 +75,7 @@ describe('relationship tests', function() {
         };
         RelTest.create(data, function (err, doc) {
           if (err) {
-            console.error(err);
+            return n(err);
           }
           count++;
           items.push(doc);
@@ -98,7 +98,7 @@ describe('relationship tests', function() {
         });
       }, function(err, results) {
         if (err) {
-          console.error(err);
+          return n(err);
         }
         items = results;
         next(err);

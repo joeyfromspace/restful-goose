@@ -29,7 +29,8 @@ describe('post requests', function() {
       }, function (next) {
         var data = {
           name: faker.name.firstName(),
-          rank: getRank()
+          rank: getRank(),
+          uniquePath: _.random(1, 600000) + count
         };
         Model.create(data, function (err, doc) {
           count++;
@@ -76,5 +77,18 @@ describe('post requests', function() {
       });
   });
 
-
+  it('should get error status 409 when trying to create a duplicate item on / POST', function(done) {
+    var data = { data: { attributes: { name: faker.name.firstName(), rank: faker.random.number(), uniquePath: _.sample(items).uniquePath }}};
+    chai.request(app)
+      .post('/tests')
+      .set('Content-Type', 'application/vnd.api+json')
+      .send(JSON.stringify(data))
+      .end(function(err, res) {
+        expect(res.status).to.equal(409);
+        expect(res).to.be.json;
+        expect(res.body).to.have.property('errors');
+        expect(res.body.errors).to.be.a('array');
+        done();
+      });
+  });
 });

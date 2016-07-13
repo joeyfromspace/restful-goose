@@ -4,6 +4,7 @@ var async = require('async');
 var mongoose = require('mongoose');
 var testDb = 'mongodb://127.0.0.1:27017/test';
 var restfulGoose = require('../index');
+var _ = require('lodash');
 
 var createTestObjects = 10;
 var testDocs = [];
@@ -23,6 +24,9 @@ var createTestModel = function(callback) {
   var schema = new mongoose.Schema({
     name: String,
     rank: Number,
+    uniquePath: { type: Number, unique: true, default: function() {
+      return _.random(1, 900000); 
+    }},
     createdAt: { type: Date, default: Date.now }
   });
   var subschema = new mongoose.Schema({
@@ -42,7 +46,7 @@ var createTestData = function(callback) {
   var Model = mongoose.model('Test');
   var count = 0;
   var _create = function(next) {
-    Model.create({ name: faker.name.firstName(), rank: faker.random.number() }, function(err, doc) {
+    Model.create({ name: faker.name.firstName(), rank: faker.random.number(), uniquePath: _.random(1, 600000) + count }, function(err, doc) {
       count++;
       testDocs.push(doc);
       SubModel.create({name: faker.name.firstName(), cool: faker.random.number(), test: doc.id}, function (err) {
