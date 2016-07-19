@@ -1,6 +1,6 @@
 {
   "name": "restful-goose",
-  "version": "1.3.9",
+  "version": "1.3.9a",
   "description": "Yet another RESTful microservice generator for Mongoose with an emphasis on flexibility",
   "main": "index.js",
   "scripts": {
