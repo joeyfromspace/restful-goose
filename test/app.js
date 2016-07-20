@@ -27,6 +27,7 @@ var createTestModel = function(callback) {
     uniquePath: { type: Number, unique: true, default: function() {
       return _.random(1, 900000); 
     }},
+    needsEnum: { type: String, enum: ['a', 'b', 'c']},
     createdAt: { type: Date, default: Date.now }
   });
   var subschema = new mongoose.Schema({
