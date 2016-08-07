@@ -1,23 +1,24 @@
 {
   "name": "restful-goose",
-  "version": "1.4.1",
-  "description": "Yet another RESTful microservice generator for Mongoose with an emphasis on flexibility",
+  "version": "2.0.0",
+  "description": "A new improved version of your favorite API framework for MongoDB",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test"
+    "test": "DEBUG=restful-goose:* mocha test"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/joeyfromspace/restful-goose.git"
+    "url": "git+https://github.com/joeyfromspace/restful-goose.git"
   },
   "keywords": [
-    "mongoose",
-    "plugin",
-    "mongodb",
-    "express",
-    "rest",
     "api",
-    "microservice"
+    "rest",
+    "mongoose",
+    "mongodb",
+    "microservice",
+    "route",
+    "mvc",
+    "model"
   ],
   "author": "Joey Lappin <joey@joeyfromspace.com>",
   "license": "MIT",
@@ -26,20 +27,20 @@
   },
   "homepage": "https://github.com/joeyfromspace/restful-goose#readme",
   "dependencies": {
-    "async": "2.0.0-rc.5",
-    "body-parser": "1.15.1",
-    "express": "4.13.4",
-    "lodash": "4.12.0",
-    "mongoose": "4.4.17",
+    "async": "2.0.1",
+    "body-parser": "1.15.2",
+    "express": "4.14.0",
+    "lodash": "4.14.1",
+    "moment": "2.14.1",
     "morgan": "1.7.0",
-    "pluralize": "2.0.0",
-    "to-camel-case": "1.0.0"
+    "pluralize": "3.0.0"
   },
   "devDependencies": {
-    "babel-cli": "6.10.1",
     "chai": "3.5.0",
-    "chai-http": "2.0.1",
+    "chai-http": "3.0.0",
+    "debug": "2.2.0",
     "faker": "3.1.0",
-    "mocha": "2.4.5"
+    "mocha": "3.0.1",
+    "mongoose": "4.5.8"
   }
 }

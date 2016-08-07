@@ -2,8 +2,15 @@
 
 Yet another RESTful microservice generator for Mongoose with an emphasis on flexibility. This API uses the [JSON API spec](http://jsonapi.org/) and supports optional child models.
 
-# Version 1.3.0 Breaking Changes
-The constructor now is global, accepting an array of models instead of single models. This allows greater extensibility in the code and greatly simplifies implementation, forcing all APIs to conform to one common schema.
+Version: 2.0.0-beta1
+
+# Major Update - Version 2.0.0
+2.0.0 is a complete rewrite of RESTful Goose. It takes what I learned from building 1.x and does everything in a much more efficient and powerful way.
+
+However, 2.x is COMPLETELY incompatible with 1.x so please take care when updating your application.
+
+# TODO
+Error handling is incomplete in this version and is little more than a stub, so beware if you plan to use this in a production context.
 
 ## Installation
 ```
@@ -11,64 +18,58 @@ npm install restful-goose
 ```
 
 ## Use
+Version 2 of RESTful Goose is much easier to use. The constructor only accepts one argument: a Mongoose Connection.
+
 ```
-var express = require('express');
+var restfulGoose = require('restful-goose');
 var mongoose = require('mongoose');
+
+mongoose.connect('localhost');
+restfulGoose(mongoose).listen(3000);
+```
+
+Your API will be listening for connections on port 3000.
+
+Alternatively, and probably the more common use, would be to mount RESTful Goose under your existing Express app so you can take advantage of authentication middlewares and the like:
+
+ ```
+ var express = require('express');
+ var restfulGoose = require('restfulGoose');
+ var mongoose = require('mongoose');
+
+ var app = express();
+ var myMiddleware = [passport.authenticate('bearer'), validateUser];
+
+ app.use('/api', myMiddleware, restfulGoose(mongoose));
+
+ app.listen(3000);
+ ```
+
+## Customization
+The best part about RESTful Goose 2 is the much greater flexibility you have to customize how the app handles routes.
+
+Every route goes through an event loop, calling a series of functions that you can hook at nearly every stage of handling a request.
+
+The base restfulGoose exposes the RouteMap class which allows you to customize routes for a given model.
+
+```
+/* post-route.js */
+var RouteMap = require('restful-goose').RouteMap;
+
+module.exports = RouteMap.extend({
+    beforeModel: function(req, res, next) {
+        // Modify the query to only return users' own posts
+        req.query.user = req.user.id;
+    }
+});
+```
+
+```
+/* app.js */
 var restfulGoose = require('restful-goose');
 
-var app = express();
+// ...
 
-var mySchema = new mongoose.Schema({});
-mongoose.model('Article', mySchema);
-mongoose.model('Comment', commentSchema);
-
-var api = restfulGoose(mongoose.models, { mountPath: 'http://myapi.com/api' }, { Article: { subModels: ['Comment'] }});
-
-app.use('/api', api);
+var api = restfulGoose(mongoose);
+api.defineRoute('Post', require('./post-route'));
 ```
-
-This will mount the model under /api/articles and comments under /api/articles/relationships/comments.
-
-## Supported Methods
-As per the JSON API spec, the following methods are supported: GET, POST, PATCH, DELETE. Use PATCH to update objects instead of PUT by including only those parameters you would like to update.
-
-## Options
-
-### Authenticators
-Optional middleware can be set on a per-method basis to allow or deny access to a route. This is helpful if you want certain users to be able to GET resources but not DELETE them. You can use the "all" key to apply an authenticator to every method on a route. You can also mount any middleware you want in front of the API sub-app as per a normal Express route.
-
-Example:
-```
-var options = {
-    Article: {
-        authenticators: {
-            delete: function(req, res, next) {
-                if (req.user) {
-                    return next();
-                }
-
-                res.status(403).json({ errors: [{ title: 'Unauthorized', detail: 'You do not have access to this resource', status: 403 }]);
-            }
-        }
-    }
-};
-
-var api = restfulGoose(mongoose.models, {}, options);
-
-app.use('/api', api);
-```
-
-DELETE requests will be denied unless req.user is truthy.
- 
-### Custom Error Handling
-RESTful Goose comes with JSON API compliant error-handling out of the box. However, if you want to replace it with your own error-handling middleware, you can supply it in the `onError` option. The function is passed the request and response object as well as the error object that triggered the error.
-
-### SubModels
-Nothing is populated by default and any associated objects are inaccessible. If you have a model that lives under another (for instance, comments that live in their own collection but are associated with an article object), you can supply an array of model names in the options' `subModels` property. These will automatically be mounted under /parent-model/:parent-id/sub-model/:sub-id.
-
-### Custom Middleware
-Set custom middleware for each route by passing an object with the appropriate method key at the `middlewares` object. This function will be called after any authentication middleware. Handy for file uploads and other custom functions you want to inject before a route.
-
-## TODO
-* Populate links in responses
-* Make more use of related and relationships objects in responses
