@@ -1,1 +1,1 @@
-module.exports = require('./lib/restful-goose');
+module.exports = require('./lib/app');
