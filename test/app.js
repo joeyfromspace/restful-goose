@@ -35,7 +35,14 @@ var createTestModel = function(callback) {
     cool: Number,
     test: { type: mongoose.Schema.Types.ObjectId, ref: 'Test' }
   });
+  var compoundschema = new mongoose.Schema({
+    name: { type: String, required: true },
+    motto: { type: String, required: true }
+  });
 
+  compoundschema.index({ name: 1, motto: 1 }, { unique: true })
+
+  mongoose.model('CompoundTest', compoundschema);
   mongoose.model('Test', schema);
   mongoose.model('SubTest', subschema);
 
