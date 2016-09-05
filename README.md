@@ -9,9 +9,6 @@ Version: 2.0.0-beta1
 
 However, 2.x is COMPLETELY incompatible with 1.x so please take care when updating your application.
 
-# TODO
-Error handling is incomplete in this version and is little more than a stub, so beware if you plan to use this in a production context.
-
 ## Installation
 ```
 npm install restful-goose
@@ -46,11 +43,11 @@ Alternatively, and probably the more common use, would be to mount RESTful Goose
  ```
 
 ## Customization
-The best part about RESTful Goose 2 is the much greater flexibility you have to customize how the app handles routes.
+The best part about RESTful Goose 2 is the much greater flexibility you have to customize how the app handles individual routes.
 
 Every route goes through an event loop, calling a series of functions that you can hook at nearly every stage of handling a request.
 
-The base restfulGoose exposes the RouteMap class which allows you to customize routes for a given model.
+The base restfulGoose export exposes the RouteMap object, which you can copy via the object's `extend()` method:
 
 ```
 /* post-route.js */
@@ -64,12 +61,16 @@ module.exports = RouteMap.extend({
 });
 ```
 
+Then bind your custom map to your restfulGoose instance using the instance's `defineRoute()` method:
+
 ```
 /* app.js */
 var restfulGoose = require('restful-goose');
-
+var postRoute = require('./post-route');
 // ...
 
 var api = restfulGoose(mongoose);
-api.defineRoute('Post', require('./post-route'));
+
+/* defineRoute(modelName, routeMapObject) */
+api.defineRoute('Post', postRoute);
 ```

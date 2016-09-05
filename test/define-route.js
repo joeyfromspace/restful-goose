@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var chai = require('chai');
 var expect = chai.expect;
 var chaiHttp = require('chai-http');
+var RGTEST = require('./lib/constants');
 
 var app, RouteMap, routeMap;
 
@@ -13,7 +14,7 @@ var connection;
 describe('define route', function() {
   'use strict';
   before(function(done) {
-    connection = mongoose.createConnection('mongodb://localhost:27017/restful-goose-define-route-test');
+    connection = mongoose.createConnection(RGTEST.MONGO_URI);
     connection.on('open', function() {
       var DefineRouteTestSchema = new mongoose.Schema({
         name: String
@@ -25,7 +26,6 @@ describe('define route', function() {
   });
 
   after(function(done) {
-    console.log('after hook ' + connection.db.databaseName);
     connection.db.dropDatabase(function() {
       connection.close(done);
     });
