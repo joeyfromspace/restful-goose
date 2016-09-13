@@ -5,6 +5,8 @@ module.exports = (function() {
   'use strict';
   var RequestTestSchema = new mongoose.Schema({
     name: { type: mongoose.Schema.Types.String, index: true },
+    isCool: { type: mongoose.Schema.Types.Boolean, default: true },
+    rank: { type: mongoose.Schema.Types.Number, default: 14 },
     subs: { type: [mongoose.Schema.Types.ObjectId], ref: 'SubTest' }
   }, { timestamps: true });
 

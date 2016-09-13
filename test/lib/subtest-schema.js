@@ -12,10 +12,8 @@ module.exports = (function() {
     var _this = this;
     var RequestTest = this.constructor.db.model('RequestTest');
     
-    if (this.isNew || this.isModified('parent')) {
-      RequestTest.findOneAndUpdate({ subs: this._id }, { $pull: { subs: this._id }}, function() {
-        RequestTest.findOneAndUpdate({ _id: _this.parent }, { $push: { subs: _this._id }}, next);
-      });
+    if (this.parent && this.isNew || this.isModified('parent')) {      
+      RequestTest.findOneAndUpdate({ _id: _this.parent }, { $push: { subs: _this._id }}, next);
     } else {
       next();
     }

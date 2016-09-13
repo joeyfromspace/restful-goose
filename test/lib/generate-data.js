@@ -40,7 +40,7 @@ module.exports = (function() {
             break;
           
           case 'ObjectID':
-            if (path.options.ref) {
+            if (path.options.ref && docs[path.options.ref] && docs[path.options.ref].length) {
               o[pathName] = _.sample(docs[path.options.ref])._id;  
             }
             break;
@@ -78,12 +78,16 @@ module.exports = (function() {
   }
 
   return function(mongoose, itemCount, done) {
+    var models;
+
     if (typeof itemCount === 'function') {
       done = itemCount;
     } else if (typeof itemCount === 'number') {
       count = itemCount;
     }
-    async.eachSeries(mongoose.models, generateData, done);
+    
+    models = _.sortBy(mongoose.models, 'modelName').reverse();    
+    async.eachSeries(models, generateData, done);
   };
 
 }());

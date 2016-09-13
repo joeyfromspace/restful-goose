@@ -26,12 +26,18 @@ describe('router', function() {
       generateData(connection, count, done);
     });
   });
+
+  after(function(done) {
+      connection.db.dropDatabase(function() {
+          connection.close(done);  
+      });
+  });
   
   describe('GET methods', function() {
     var sampleItem;
     
     before(function(done) {
-      connection.model('RequestTest').findOne({ subs: { $size: 1 }}, {}, function(err, result) {
+      connection.model('RequestTest').findOne({ subs: { $exists: true }}, {}, function(err, result) {
         sampleItem = result;
         done();
       });
@@ -57,7 +63,7 @@ describe('router', function() {
           expect(res.body.data[0]).to.have.property('type', 'request-tests');
           expect(res.body.data[0].attributes).to.be.a('object');
           expect(res.body.data[0].attributes).to.not.have.property('subs');
-          expect(res.body.data[0].attributes).to.have.all.keys(['name', 'created-at' ,'updated-at']);
+          expect(res.body.data[0].attributes).to.have.all.keys(['name', 'rank', 'is-cool', 'created-at' ,'updated-at']);
           done();
         });
     });
@@ -72,7 +78,7 @@ describe('router', function() {
           expect(res.body).to.have.property('data');
           expect(res.body.data).to.contain.keys(['id', 'type', 'attributes']);
           expect(res.body.data.type).to.equal('request-tests');
-          expect(res.body.data.attributes).to.have.all.keys(['name', 'created-at', 'updated-at']);
+          expect(res.body.data.attributes).to.have.all.keys(['name', 'is-cool', 'rank', 'created-at', 'updated-at']);
           done();
         });
     });
