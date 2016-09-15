@@ -88,4 +88,19 @@ describe('helper.deserialize()', function() {
             done();
         });
     });
+
+    it('should properly deserialize an object with a one-to-one relationship', function(done) {
+      connection.model('SubTest').findOne({ parent: { $exists: true }}, {}, {}, function(err, doc) {
+        var s = helpers.serialize(doc);
+        var d = helpers.deserialize(s);
+
+        expect(d).to.be.a('object');
+        expect(d).not.have.property('attributes');
+        expect(d).not.have.property('relationships');
+        expect(d).to.have.property('name', doc.name);
+        expect(d.parent).to.be.a('string');
+        expect(d.parent).to.equal(doc.parent.toString());
+        done();
+      });
+    });
 });
