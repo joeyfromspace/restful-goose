@@ -29,20 +29,20 @@ describe('router', function() {
 
   after(function(done) {
       connection.db.dropDatabase(function() {
-          connection.close(done);  
+          connection.close(done);
       });
   });
-  
+
   describe('GET methods', function() {
     var sampleItem;
-    
+
     before(function(done) {
       connection.model('RequestTest').findOne({ subs: { $exists: true }}, {}, function(err, result) {
         sampleItem = result;
         done();
       });
     });
-    
+
     it('should retrieve a list of RequestTest objects on /request-tests GET', function(done) {
       chai.request(routerApp)
         .get('/request-tests')
@@ -50,7 +50,8 @@ describe('router', function() {
           res.body.data.forEach(function(item) {
             if (item.relationships) {
               expect(item.relationships).to.have.property('subs');
-              expect(item.relationships.subs[0]).to.have.all.keys(['id', 'type', 'link']);
+              expect(item.relationships.subs[0]).to.have.all.keys(['data', 'links']);
+              expect(item.relationships.subs[0].data).to.have.all.keys('id', 'type');
             }
           });
           expect(res).to.be.json;
@@ -82,7 +83,7 @@ describe('router', function() {
           done();
         });
     });
-    
+
     it('should retrieve an item\'s relationship at /request-tests/:item_id/relationships/sub-tests/:child_id', function(done) {
       chai.request(routerApp)
         .get('/request-tests/' + sampleItem.id + '/relationships/sub-tests/' + sampleItem.subs[0])
@@ -95,16 +96,16 @@ describe('router', function() {
           done();
         });
     });
-    
+
   });
-  
+
   describe('pagination', function() {
     var page1Ids;
     before(function(done) {
       var count = 50;
       generateData(connection, count, done);
     });
-    
+
     it('should return only the first 10 results on /request-tests?page=1&per_page=10 GET', function(done) {
       chai.request(routerApp)
         .get('/request-tests?page=1&per_page=10')
@@ -118,7 +119,7 @@ describe('router', function() {
           done();
         });
     });
-    
+
     it('should return the second 10 results on /request-tests?page=2&per_page=10 GET', function(done) {
       chai.request(routerApp)
         .get('/request-tests?page=2&per_page=10')
@@ -129,7 +130,7 @@ describe('router', function() {
           done();
         });
     });
-    
+
     it('paginated requests should have pagination data included in the links object on /request-tests?page=1 GET', function(done) {
       chai.request(routerApp)
         .get('/request-tests?page=1')
@@ -143,7 +144,7 @@ describe('router', function() {
         });
     });
   });
-  
+
   describe('post requests', function() {
     it('should create a new object on /request-tests POST', function(done) {
       chai.request(routerApp)
@@ -158,19 +159,19 @@ describe('router', function() {
           expect(res.body.data.attributes.name).to.equal('Bob Loblaw');
           done();
         });
-    });  
+    });
   });
-  
+
   describe('delete requests', function() {
     var sampleItem;
-    
+
     before(function(done) {
       connection.model('RequestTest').findOne({}, {}, function(err, item) {
         sampleItem = item;
         done();
-      });  
+      });
     });
-    
+
     it('should delete an item on /request-tests/:item_id DELETE', function(done) {
       chai.request(routerApp)
         .delete('/request-tests/' + sampleItem.id)
@@ -181,17 +182,17 @@ describe('router', function() {
         });
     });
   });
-  
+
   describe('patch requests', function() {
     var sampleItem;
-    
+
     before(function(done) {
       connection.model('RequestTest').findOne({}, {}, function(err, item) {
         sampleItem = item;
         done();
       });
     });
-    
+
     it('should update the name attribute on an object on /request-tests/:item_id PATCH', function(done) {
       chai.request(routerApp)
         .patch('/request-tests/' + sampleItem.id)
@@ -205,8 +206,8 @@ describe('router', function() {
         });
     });
   });
-  
-  
+
+
   after(function(done) {
     connection.db.dropDatabase(function() {
       connection.close(done);

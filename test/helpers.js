@@ -22,7 +22,7 @@ describe('helper.serialize()', function() {
 
     after(function(done) {
         connection.db.dropDatabase(function() {
-            connection.close(done);  
+            connection.close(done);
         });
     });
 
@@ -46,9 +46,9 @@ describe('helper.serialize()', function() {
                 expect(pkg).to.have.property('relationships');
                 expect(pkg.attributes.name).to.equal(o.name);
                 expect(pkg.attributes.rank).to.equal(o.rank);
-                expect(pkg.relationships.subs[0].id).to.equal(sub._id.toString());
+                expect(pkg.relationships.subs[0].data.id).to.equal(sub._id.toString());
                 done();
-            });      
+            });
         });
     });
 });
@@ -68,7 +68,7 @@ describe('helper.deserialize()', function() {
 
     after(function(done) {
         connection.db.dropDatabase(function() {
-            connection.close(done);  
+            connection.close(done);
         });
     });
 
