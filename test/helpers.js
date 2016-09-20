@@ -46,10 +46,19 @@ describe('helper.serialize()', function() {
                 expect(pkg).to.have.property('relationships');
                 expect(pkg.attributes.name).to.equal(o.name);
                 expect(pkg.attributes.rank).to.equal(o.rank);
-                expect(pkg.relationships.subs[0].data.id).to.equal(sub._id.toString());
+                expect(pkg.relationships.subs.data[0].id).to.equal(sub._id.toString());
                 done();
             });
         });
+    });
+
+    it('should not convert embedded objects like createdAt and updatedAt into empty objects', function(done) {
+      connection.model('RequestTest').findOne({}, {}, {}, function(err, doc) {
+        var s = helpers.serialize(doc);
+        //expect(Object.keys(doc.updatedAt).length).to.not.equal(0);
+        expect(s.attributes['updated-at'] instanceof Date).to.equal(true);
+        done();
+      });
     });
 });
 
@@ -87,6 +96,30 @@ describe('helper.deserialize()', function() {
             expect(d.subs.length).to.equal(doc.subs.length);
             done();
         });
+    });
+
+    it('should properly deserialize an object with empty array for relationship', function(done) {
+      connection.model('RequestTest').findOne({}, {}, {}, function(err, doc) {
+        doc.subs = [];
+        var s = helpers.serialize(doc);
+        var d = helpers.deserialize(s);
+
+        expect(d).to.be.a('object');
+        expect(d).not.have.property('subs');
+        done();
+      });
+    });
+
+    it('should properly deserialize an object with null for a relationship', function(done) {
+      connection.model('SubTest').findOne({}, {}, {}, function(err, doc) {
+        doc.parent = null;
+        var s = helpers.serialize(doc);
+        var d = helpers.deserialize(s);
+
+        expect(d).to.be.a('object');
+        expect(d).not.have.property('parent');
+        done();
+      });
     });
 
     it('should properly deserialize an object with a one-to-one relationship', function(done) {

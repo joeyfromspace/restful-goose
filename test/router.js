@@ -50,8 +50,8 @@ describe('router', function() {
           res.body.data.forEach(function(item) {
             if (item.relationships) {
               expect(item.relationships).to.have.property('subs');
-              expect(item.relationships.subs[0]).to.have.all.keys(['data', 'links']);
-              expect(item.relationships.subs[0].data).to.have.all.keys('id', 'type');
+              expect(item.relationships.subs).to.have.keys(['data', 'links']);
+              expect(item.relationships.subs.data[0]).to.have.all.keys('id', 'type');
             }
           });
           expect(res).to.be.json;
