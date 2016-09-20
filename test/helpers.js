@@ -112,10 +112,11 @@ describe('helper.deserialize()', function() {
 
     it('should properly deserialize an object with null for a relationship', function(done) {
       connection.model('SubTest').findOne({}, {}, {}, function(err, doc) {
-        doc.parent = null;
+        doc.set('parent', null);
         var s = helpers.serialize(doc);
         var d = helpers.deserialize(s);
 
+        expect(s.parent).to.be.undefined;
         expect(d).to.be.a('object');
         expect(d).not.have.property('parent');
         done();
