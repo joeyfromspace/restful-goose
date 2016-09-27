@@ -84,15 +84,29 @@ describe('router', function() {
         });
     });
 
-    it('should retrieve an item\'s relationship at /request-tests/:item_id/relationships/sub-tests/:child_id', function(done) {
+    it('should retrieve a list of related items at /request-tests/:item_id/relationships/subs GET', function(done) {
       chai.request(routerApp)
-        .get('/request-tests/' + sampleItem.id + '/relationships/sub-tests/' + sampleItem.subs[0])
+        .get('/request-tests/' + sampleItem.id + '/relationships/subs')
         .end(function(err, res) {
           expect(res.status).to.equal(200);
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body).to.have.property('data');
-          expect(res.body.data).to.contain.keys(['id', 'type', 'attributes']);
+          expect(res.body.data).to.be.a('array');
+          expect(res.body.data.length).to.equal(sampleItem.subs.length);
+          done();
+        });
+    });
+
+    it('should retrieve an item\'s relationship at /request-tests/:item_id/relationships/subs/:child_id GET', function(done) {
+      chai.request(routerApp)
+        .get('/request-tests/' + sampleItem.id + '/relationships/subs/' + sampleItem.subs[0])
+        .end(function(err, res) {
+          expect(res.status).to.equal(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.have.property('data');
+          expect(res.body.data).to.contain.keys(['id', 'type']);
           done();
         });
     });
@@ -146,6 +160,15 @@ describe('router', function() {
   });
 
   describe('post requests', function() {
+    var sampleId,sampleSub;
+
+    before(function(done) {
+      connection.model('SubTest').findOne({}, {}, function(err, item) {
+        sampleSub = item;
+        done();
+      });
+    });
+
     it('should create a new object on /request-tests POST', function(done) {
       chai.request(routerApp)
         .post('/request-tests')
@@ -157,19 +180,57 @@ describe('router', function() {
           expect(res.body).to.be.a('object');
           expect(res.body.data).to.contain.keys(['id', 'attributes', 'type']);
           expect(res.body.data.attributes.name).to.equal('Bob Loblaw');
+          sampleId = res.body.data.id;
+          done();
+        });
+    });
+
+    it('should create a new relationship on /request-tests/:item_id/relationships/subs POST', function(done) {
+      chai.request(routerApp)
+        .post('/request-tests/' + sampleId + '/relationships/subs')
+        .set('Content-Type', 'application/vnd.api+json')
+        .send(JSON.stringify({ data: { type: 'sub-tests', id: sampleSub.id }}))
+        .end(function(err, res) {
+          expect(res.status).to.equal(202);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body.data).to.be.a('array');
+          expect(res.body.data[0]).to.contain.keys(['id', 'type']);
+          expect(res.body.data[0].id).to.equal(sampleSub.id);
           done();
         });
     });
   });
 
   describe('delete requests', function() {
-    var sampleItem;
+    var sampleItem,sublength;
 
     before(function(done) {
-      connection.model('RequestTest').findOne({}, {}, function(err, item) {
+      connection.model('RequestTest').findOne({ subs: { $exists: true }}, {}, function(err, item) {
         sampleItem = item;
+        sublength = item.subs.length;
         done();
       });
+    });
+
+    it('should delete a relationship on /request-tests/:item_id/relationships/subs/:child_id DELETE', function(done) {
+      chai.request(routerApp)
+        .delete('/request-tests/' + sampleItem.id + '/relationships/subs/' + sampleItem.subs[0])
+        .end(function(err, res) {
+          expect(res.status).to.equal(202);
+          expect(res.body.data.length).to.equal(sublength - 1);
+          done();
+        });
+    });
+
+    it('should completely delete a relationship on /request-tests/:item_id/relationships/subs DELETE', function(done) {
+      chai.request(routerApp)
+        .delete('/request-tests/' + sampleItem.id + '/relationships/subs')
+        .end(function(err, res) {
+          expect(res.status).to.equal(202);
+          expect(res.body.data).to.be.null;
+          done();
+        });
     });
 
     it('should delete an item on /request-tests/:item_id DELETE', function(done) {
@@ -184,12 +245,15 @@ describe('router', function() {
   });
 
   describe('patch requests', function() {
-    var sampleItem;
+    var sampleItem,sampleSub;
 
     before(function(done) {
       connection.model('RequestTest').findOne({}, {}, function(err, item) {
         sampleItem = item;
-        done();
+        connection.model('SubTest').findOne({ _id: { $nin: sampleItem.subs }}, {}, function(err, subItem) {
+          sampleSub = subItem;
+          done();
+        });
       });
     });
 
@@ -202,6 +266,21 @@ describe('router', function() {
           expect(res.status).to.equal(200);
           expect(res).to.be.json;
           expect(res.body.data.attributes.name).to.equal('New Name');
+          done();
+        });
+    });
+
+    it('should update a relationship on an object on /request-tests/:item_id/relationships/subs PATCH', function(done) {
+      chai.request(routerApp)
+        .patch('/request-tests/' + sampleItem.id + '/relationships/subs')
+        .set('Content-Type', 'application/vnd.api+json')
+        .send(JSON.stringify({ data: [ { type: 'sub-tests', id: sampleSub.id } ] }))
+        .end(function(err, res) {
+          expect(res.status).to.equal(200);
+          expect(res).to.be.json;
+          expect(res.body.data).to.be.a('array');
+          expect(res.body.data.length).to.equal(1);
+          expect(res.body.data[0].id).to.equal(sampleSub.id);
           done();
         });
     });
