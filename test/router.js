@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var chai = require('chai');
 var expect = chai.expect;
 var chaiHttp = require('chai-http');
+var _ = require('lodash');
 
 chai.use(chaiHttp);
 
@@ -65,6 +66,24 @@ describe('router', function() {
           expect(res.body.data[0].attributes).to.be.a('object');
           expect(res.body.data[0].attributes).to.not.have.property('subs');
           expect(res.body.data[0].attributes).to.have.all.keys(['name', 'rank', 'is-cool', 'created-at' ,'updated-at']);
+          done();
+        });
+    });
+
+    it('should return a filtered list of items on /request-tests?isCool=true GET', function(done) {
+      chai.request(routerApp)
+        .get('/request-tests?isCool=true')
+        .end(function(err, res) {
+          var coolItems = _.filter(res.body.data, function(item) {
+            console.log(item);
+            return item.attributes["is-cool"] === true;
+          });
+          expect(res).to.be.json;
+          expect(res.status).to.equal(200);
+          expect(res.body).to.be.a('object');
+          expect(res.body.data).to.be.a('array');
+          expect(res.body.data.length).to.be.at.least(1);
+          expect(coolItems.length).to.equal(res.body.data.length);
           done();
         });
     });
@@ -228,7 +247,7 @@ describe('router', function() {
         .delete('/request-tests/' + sampleItem.id + '/relationships/subs')
         .end(function(err, res) {
           expect(res.status).to.equal(202);
-          expect(res.body.data).to.be.null;
+          expect(res.body.data).to.deep.equal([]);
           done();
         });
     });
