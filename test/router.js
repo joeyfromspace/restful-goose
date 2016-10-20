@@ -223,6 +223,21 @@ describe('router', function() {
         });
     });
 
+    it('should only delete a specified relationship on /request-tests/:item_id/relationships/subs DELETE', function(done) {
+      var len = sampleItem.subs.length - 1;
+      console.log(sampleItem.subs);
+      chai.request(routerApp)
+        .delete('/request-tests/' + sampleItem.id + '/relationships/subs')
+        .send({ data: [ { type: 'sub-tests', id: sampleItem.subs[1] }]})
+        .set('Content-Type', 'application/vnd.api+json')
+        .end(function(err, res) {
+          console.log(res.body.data);
+          expect(res.status).to.equal(202);
+          expect(res.body.data.length).to.equal(len - 1);
+          done();
+        });
+    });
+
     it('should completely delete a relationship on /request-tests/:item_id/relationships/subs DELETE', function(done) {
       chai.request(routerApp)
         .delete('/request-tests/' + sampleItem.id + '/relationships/subs')
