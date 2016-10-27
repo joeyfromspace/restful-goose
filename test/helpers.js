@@ -1,6 +1,7 @@
 var helpers = require('../lib/helpers');
 var expect = require('chai').expect;
 var mongoose = require('mongoose');
+var _ = require('lodash');
 
 var connection;
 var count = 10;
@@ -114,6 +115,7 @@ describe('helper.deserialize()', function() {
       connection.model('SubTest').findOne({}, {}, {}, function(err, doc) {
         doc.set('parent', null);
         var s = helpers.serialize(doc);
+        _.set(s, 'relationships.parent', null);
         var d = helpers.deserialize(s);
 
         expect(s.parent).to.be.undefined;
