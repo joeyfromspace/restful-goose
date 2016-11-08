@@ -18,7 +18,8 @@ describe('error handling', function() {
             var ErrorTestSchema = new mongoose.Schema({
                 name: { type: String, unique: true, required: true },
                 motto: { type: String, required: true },
-                bio: { type: String, required: true }
+                bio: { type: String, required: true },
+                arbitrary: { type: Number, max: 16 }
             });
 
             ErrorTestSchema.index({ bio: 1, motto: 1 }, { unique: true });
@@ -85,6 +86,24 @@ describe('error handling', function() {
                 expect(res.body.errors[0].source.pointer).to.equal('/data/attributes/motto');
                 done();
             });
+    });
+
+    it('should return a 403 error for causing a validation error on /error-tests/:item POST', function(done) {
+      var data = { data: { type: 'error-tests', attributes: { name: 'Cool Story 79', motto: 'Checkooutmymotto', bio: testObj.bio, arbitrary: 17 }}};
+      chai.request(app)
+        .post('/error-tests')
+        .set(RGTEST.HEADER_KEY, RGTEST.HEADER_VALUE)
+        .send(JSON.stringify(data))
+        .end(function(err, res) {
+          var error = res.body.errors[0];
+          expect(res.status).to.equal(422);
+          expect(res.body).to.have.property('errors');
+          expect(res.body.errors).to.be.a('array');
+          expect(error.title).to.equal('ValidationError');
+          expect(error.source.pointer).to.equal('/data/attributes/arbitrary');
+          expect(error.detail).to.equal('Path `arbitrary` (17) is more than maximum allowed value (16).');
+          done();
+        });
     });
 
     it('should return 404 not found error on /error-tests/:invalid_id GET', function(done) {

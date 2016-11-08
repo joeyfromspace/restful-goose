@@ -20,11 +20,13 @@ describe('router', function() {
   before(function(done) {
     connection = mongoose.createConnection('mongodb://localhost:27017/restful-goose-router-test');
     connection.on('open', function() {
-      connection.model('RequestTest', RequestTestSchema);
-      connection.model('SubTest', SubTestSchema);
+      connection.db.dropDatabase(function() {
+        connection.model('RequestTest', RequestTestSchema);
+        connection.model('SubTest', SubTestSchema);
 
-      routerApp = restfulGoose(connection);
-      generateData(connection, count, done);
+        routerApp = restfulGoose(connection);
+        generateData(connection, count, done);
+      });
     });
   });
 
@@ -37,8 +39,11 @@ describe('router', function() {
   describe('GET methods', function() {
     var sampleItem;
 
-    before(function(done) {
+    before(function getSample(done) {
       connection.model('RequestTest').findOne({ subs: { $exists: true }}, {}, function(err, result) {
+        if (!result || !result.subs.length) {
+          return getSample(done);
+        }
         sampleItem = result;
         done();
       });
@@ -99,6 +104,22 @@ describe('router', function() {
           expect(res.body.data).to.contain.keys(['id', 'type', 'attributes']);
           expect(res.body.data.type).to.equal('request-tests');
           expect(res.body.data.attributes).to.have.all.keys(['name', 'is-cool', 'rank', 'created-at', 'updated-at']);
+          done();
+        });
+    });
+
+    it('should include sub-tests as compound documents on /request-tests/:item_id?include=subs', function(done) {
+      chai.request(routerApp)
+        .get('/request-tests/' + sampleItem.id + '?include=subs')
+        .end(function(err, res) {
+          if (err) {
+            return done(err);
+          }
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('included');
+          expect(res.body.included).to.be.a('array');
+          expect(res.body.included.length).to.equal(sampleItem.subs.length);
+          expect(_.chain(res.body.included).map('id').sort().value()).to.eql(_.chain(sampleItem.subs).invokeMap('toString').sort().value());
           done();
         });
     });
