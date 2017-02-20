@@ -1,10 +1,10 @@
 {
   "name": "restful-goose",
-  "version": "2.1.2",
+  "version": "2.2",
   "description": "A new improved version of your favorite API framework for mongoose/MongoDB",
   "main": "index.js",
   "scripts": {
-    "test": "DEBUG=restful-goose:* mocha test"
+    "test": "node_modules/.bin/mocha test"
   },
   "repository": {
     "type": "git",
@@ -40,6 +40,7 @@
     "chai-http": "3.0.0",
     "debug": "2.2.0",
     "faker": "3.1.0",
+    "istanbul": "^0.4.5",
     "jsdoc": "3.4.0",
     "mocha": "3.0.1",
     "mongoose": "4.5.8"

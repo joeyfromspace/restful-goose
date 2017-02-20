@@ -80,7 +80,6 @@ describe('router', function() {
         .get('/request-tests?isCool=true')
         .end(function(err, res) {
           var coolItems = _.filter(res.body.data, function(item) {
-            console.log(item);
             return item.attributes["is-cool"] === true;
           });
           expect(res).to.be.json;
@@ -149,6 +148,46 @@ describe('router', function() {
           expect(res.body.data).to.contain.keys(['id', 'type']);
           done();
         });
+    });
+
+    it('should retrieve a list of items sorted descending by rank at /request-tests?sort=-rank GET', function(done) {
+      chai.request(routerApp)
+        .get('/request-tests?sort=-rank')
+        .end(function(err, res) {
+          expect(res.status).to.equal(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.have.property('data');
+          expect(res.body.data).to.be.a('array');
+
+          for (var i = 0; i < res.body.data.length; i++) {
+            if (i > 0) {
+              expect(res.body.data[i].attributes.rank).to.be.lte(res.body.data[i - 1].attributes.rank);
+            }
+          }
+
+          done();
+        });
+    });
+
+      it('should retrieve a list of items sorted ascending by rank at /request-tests?sort=-rank GET', function(done) {
+        chai.request(routerApp)
+          .get('/request-tests?sort=rank')
+          .end(function(err, res) {
+            expect(res.status).to.equal(200);
+            expect(res).to.be.json;
+            expect(res.body).to.be.a('object');
+            expect(res.body).to.have.property('data');
+            expect(res.body.data).to.be.a('array');
+
+            for (var i = 0; i < res.body.data.length; i++) {
+              if (i > 0) {
+                expect(res.body.data[i].attributes.rank).to.be.gte(res.body.data[i - 1].attributes.rank);
+              }
+            }
+
+            done();
+          });
     });
 
   });

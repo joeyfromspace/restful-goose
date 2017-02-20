@@ -2,12 +2,11 @@
 
 Yet another RESTful microservice generator for Mongoose with an emphasis on flexibility. This API uses the [JSON API spec](http://jsonapi.org/) and supports optional child models.
 
-Version: 2.0.0-beta1
+Version: 2.2
 
-# Major Update - Version 2.0.0
-2.0.0 is a complete rewrite of RESTful Goose. It takes what I learned from building 1.x and does everything in a much more efficient and powerful way.
-
-However, 2.x is COMPLETELY incompatible with 1.x so please take care when updating your application.
+## What's New
+- Added advanced filtering inspired by [json-api](https://www.npmjs.com/package/json-api#filtering) npm package. Just do ?filter[simple][updated-at][$lte]=<timestamp>!
+- Fixed sorting
 
 ## Installation
 ```
