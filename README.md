@@ -3,7 +3,7 @@
 Yet another RESTful microservice generator for Mongoose with an emphasis on flexibility. This API uses the [JSON API spec](http://jsonapi.org/) and supports optional child models.
 
 Version: 2.2.21
-https://travis-ci.org/joeyfromspace/restful-goose.svg?branch=master
+![TravisCI](https://travis-ci.org/joeyfromspace/restful-goose.svg?branch=master)
 
 ## What's New
 ### 2.2.21
