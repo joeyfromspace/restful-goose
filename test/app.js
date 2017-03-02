@@ -1,3 +1,4 @@
+/* globals describe, before, after, it */
 var assert = require('chai').assert;
 var faker = require('faker');
 var async = require('async');
@@ -10,6 +11,7 @@ var createTestObjects = 10;
 var testDocs = [];
 
 var connectDb = function(callback) {
+  'use strict';
   var connection = mongoose.connect(testDb);
   mongoose.connection.on('connected', function(err) {
     if (err) {
@@ -21,6 +23,7 @@ var connectDb = function(callback) {
 };
 
 var createTestModel = function(callback) {
+  'use strict';
   var schema = new mongoose.Schema({
     name: String,
     rank: Number,
@@ -40,7 +43,7 @@ var createTestModel = function(callback) {
     motto: { type: String, required: true }
   });
 
-  compoundschema.index({ name: 1, motto: 1 }, { unique: true })
+  compoundschema.index({ name: 1, motto: 1 }, { unique: true });
 
   mongoose.model('CompoundTest', compoundschema);
   mongoose.model('Test', schema);
@@ -50,6 +53,7 @@ var createTestModel = function(callback) {
 };
 
 var createTestData = function(callback) {
+  'use strict';
   var SubModel = mongoose.model('SubTest');
   var Model = mongoose.model('Test');
   var count = 0;
@@ -69,15 +73,18 @@ var createTestData = function(callback) {
 };
 
 before(function(done) {
+  'use strict';
   async.series([connectDb, createTestModel, createTestData], done);
 });
 
 after(function(done) {
+  'use strict';
   mongoose.connection.close(done);
 });
 
 
 describe('constructor tests', function() {
+  'use strict';
   it('should create an app for the test model', function(done) {
     var app = restfulGoose(mongoose);
     assert.isOk(app);
