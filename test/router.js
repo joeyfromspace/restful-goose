@@ -92,6 +92,19 @@ describe('router', function() {
         });
     });
 
+    it('should return an empty array on /request-tests/?filter[no-such-attribute]=nosuchvalue GET', function (done) {
+      chai.request(routerApp)
+        .get('/request-tests?filter[noSuchAttribute]=nosuchvalue')
+        .end(function (err, res) {
+          expect(res).to.be.json;
+          expect(res.status).to.equal(200);
+          expect(res.body).to.be.a('object');
+          expect(res.body.data).to.be.a('array');
+          expect(res.body.data.length).to.equal(0);
+          done();
+        });
+    });
+
     it('should retrieve a single item on /request-tests/:item_id GET', function(done) {
       chai.request(routerApp)
         .get('/request-tests/' + sampleItem.id)
@@ -103,6 +116,16 @@ describe('router', function() {
           expect(res.body.data).to.contain.keys(['id', 'type', 'attributes']);
           expect(res.body.data.type).to.equal('request-tests');
           expect(res.body.data.attributes).to.have.all.keys(['name', 'is-cool', 'rank', 'created-at', 'updated-at']);
+          done();
+        });
+    });
+
+    it('should return a 404 error when attempting to find a missing item on /request-tests/:invalid_item_id GET', function (done) {
+      var oid = new mongoose.mongo.ObjectID();
+      chai.request(routerApp)
+        .get('/request-tests/' + oid.toString())
+        .end(function (err, res) {
+          expect(res.status).to.equal(404);
           done();
         });
     });
@@ -133,6 +156,16 @@ describe('router', function() {
           expect(res.body).to.have.property('data');
           expect(res.body.data).to.be.a('array');
           expect(res.body.data.length).to.equal(sampleItem.subs.length);
+          done();
+        });
+    });
+
+    it('should return a 404 error at /request-tests/:invalid_item_id/relationships/subs GET', function (done) {
+      var oid = new mongoose.mongo.ObjectID();
+      chai.request(routerApp)
+        .get('/request-tests/' + oid.toString() + '/relationships/subs')
+        .end(function (err, res) {
+          expect(res.status).to.equal(404);
           done();
         });
     });
@@ -279,6 +312,19 @@ describe('router', function() {
           done();
         });
     });
+
+    it('should return a 404 error on /request-tests/:invalid_item_id/relationships/subs POST', function (done) {
+      var oid = new mongoose.mongo.ObjectID();
+      chai.request(routerApp)
+        .post('/request-tests/' + oid.toString() + '/relationships/subs')
+        .set('Content-Type', 'application/vnd.api+json')
+        .send(JSON.stringify({ data: { type: 'sub-tests' }, id: sampleSub.id }))
+        .end(function (err, res) {
+          expect(res.status).to.equal(404);
+          done();
+        });
+    });
+
   });
 
   describe('delete requests', function() {
@@ -331,6 +377,16 @@ describe('router', function() {
         .end(function(err, res) {
           expect(res.status).to.equal(204);
           expect(res.body).to.not.contain.property('data');
+          done();
+        });
+    });
+
+    it('should return a 404 not found error when providing an invalid id on /request-tests/:invalid_item_id DELETE', function (done) {
+      var oid = new mongoose.mongo.ObjectID();
+      chai.request(routerApp)
+        .delete('/request-tests/' + oid)
+        .end(function (err, res) {
+          expect(res.status).to.equal(404);
           done();
         });
     });
