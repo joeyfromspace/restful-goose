@@ -9,6 +9,14 @@ var RequestTestSchema = require('./lib/requesttest-schema');
 var SubTestSchema = require('./lib/subtest-schema');
 var generateData = require('./lib/generate-data');
 
+after(function (done) {
+    connection.db.dropDatabase(function () {
+        connection.close(function () {
+            done();
+        });
+    });
+});
+
 describe('helper.serialize()', function() {
     'use strict';
 

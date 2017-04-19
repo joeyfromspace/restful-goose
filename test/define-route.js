@@ -13,6 +13,14 @@ var app, RouteMap, routeMap;
 chai.use(chaiHttp);
 var connection;
 
+after(function (done) {
+    connection.db.dropDatabase(function () {
+        connection.close(function () {
+            done();
+        });
+    });
+});
+
 describe('define route', function() {
   'use strict';
   before(function(done) {

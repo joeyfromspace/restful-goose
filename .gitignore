@@ -12,3 +12,7 @@ node_modules
 pids
 *.pid
 *.seed
+
+# Generated Files
+coverage
+docs

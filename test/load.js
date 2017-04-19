@@ -4,6 +4,14 @@ var mongoose = require('mongoose');
 var winston = require('winston');
 var connection;
 
+after(function (done) {
+    connection.db.dropDatabase(function () {
+        connection.close(function () {
+            done();
+        });
+    });
+});
+
 describe('initialization tests', function() {
   'use strict';
   before(function(done) {

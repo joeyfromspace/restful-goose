@@ -2,11 +2,15 @@
 
 Yet another RESTful microservice generator for Mongoose with an emphasis on flexibility. This API uses the [JSON API spec](http://jsonapi.org/) and supports optional child models.
 
-Version: 2.2.22
+Version: ${VERSION}
 
 ![TravisCI](https://travis-ci.org/joeyfromspace/restful-goose.svg?branch=master)
 
 ## What's New
+### 2.2.3
+- Fixed include bug where the dependent documents were not being returned in the response
+- Fixed crashing when trying to DELETE or UPDATE a non-existent model
+
 ### 2.2.22
 - Removed morgan middleware on api sub-app
 

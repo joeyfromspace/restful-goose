@@ -10,6 +10,14 @@ chai.use(chaiHttp);
 var connection,item,app;
 var testObj = { name: 'Coolblood1', motto: 'Wow so cool', bio: 'I am from Panama in 1916.' };
 
+after(function (done) {
+    connection.db.dropDatabase(function () {
+        connection.close(function () {
+            done();
+        });
+    });
+});
+
 describe('error handling', function() {
     'use strict';
     before(function(done) {
@@ -117,5 +125,16 @@ describe('error handling', function() {
                 expect(res.body.errors[0].title).to.equal('NotFound');
                 done();
             });
+    });
+
+    it('should return a 500 error when db is disconnected on /error-tests GET', function (done) {
+        connection.close(function () { 
+            chai.request(app)
+                .get('/error-tests')
+                .end(function (err, res) {
+                    expect(res.status).to.equal(500);
+                    done();
+                });
+        });
     });
 });

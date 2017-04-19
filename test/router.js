@@ -15,6 +15,14 @@ var SubTestSchema = require('./lib/subtest-schema');
 var generateData = require('./lib/generate-data');
 var connection;
 
+after(function (done) {
+    connection.db.dropDatabase(function () {
+        connection.close(function () {
+            done();
+        });
+    });
+});
+
 describe('router', function() {
   'use strict';
   before(function(done) {
@@ -139,6 +147,7 @@ describe('router', function() {
           }
           expect(res.status).to.equal(200);
           expect(res.body).to.have.property('included');
+          expect(res.body).to.have.property('data');
           expect(res.body.included).to.be.a('array');
           expect(res.body.included.length).to.equal(sampleItem.subs.length);
           expect(_.chain(res.body.included).map('id').sort().value()).to.eql(_.chain(sampleItem.subs).invokeMap('toString').sort().value());
