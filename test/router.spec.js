@@ -29,8 +29,8 @@ describe('router', function() {
     connection = mongoose.createConnection('mongodb://localhost:27017/restful-goose-router-test');
     connection.on('open', function() {
       connection.db.dropDatabase(function() {
-        connection.model('RequestTest', RequestTestSchema);
         connection.model('SubTest', SubTestSchema);
+        connection.model('RequestTest', RequestTestSchema);
 
         routerApp = restfulGoose(connection);
         generateData(connection, count, done);
@@ -165,6 +165,12 @@ describe('router', function() {
           expect(res.body).to.have.property('data');
           expect(res.body.data).to.be.a('array');
           expect(res.body.data.length).to.equal(sampleItem.subs.length);
+          for (var i = 0; i < res.body.data; i++) {
+            var item = res.body.data[i];
+            expect(item).to.contain.keys(['id', 'type', 'attributes', 'relationships']);
+            expect(item.type).to.equal('sub-tests');
+            expect(item.id).to.not.equal(sampleItem.id);
+          }
           done();
         });
     });
@@ -187,7 +193,9 @@ describe('router', function() {
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body).to.have.property('data');
-          expect(res.body.data).to.contain.keys(['id', 'type']);
+          expect(res.body.data).to.contain.keys(['id', 'type', 'attributes', 'relationships']);
+          expect(res.body.data.id).to.equal(sampleItem.subs[0].toString());
+          expect(res.body.data.type).to.equal('sub-tests');
           done();
         });
     });
