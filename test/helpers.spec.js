@@ -169,14 +169,15 @@ describe('helper.digestQuery()', function() {
 
     it('should return a properly formatted query object on helper.digestQuery(query)', function(done) {
         var exampleQuery = { 'filter[simple][rank][$lte]': 7 };
-        var q = helpers.digestQuery(exampleQuery);
+        var RequestTest = connection.model('RequestTest');
+        var q = helpers.digestQuery(exampleQuery, RequestTest);
 
         expect(q).to.be.a('object');
         expect(q).to.have.property('rank');
         expect(q.rank).to.have.property('$lte');
         expect(q.rank.$lte).to.be.a('number');
 
-        connection.model('RequestTest').find(q, function(err, items) {
+        RequestTest.find(q, function(err, items) {
             if (err) {
                 throw err;
             }
@@ -192,7 +193,8 @@ describe('helper.digestQuery()', function() {
 
     it('should return a properly formatted query object on helper.digestQuery(query) when more than one filter is present', function(done) {
         var exampleQuery = { 'filter[simple][rank][$lte]': 8, 'filter[simple][rank][$gte]': 2, 'sort': '-createdAt' };
-        var q = helpers.digestQuery(exampleQuery);
+        var RequestTest = connection.model('RequestTest');
+        var q = helpers.digestQuery(exampleQuery, RequestTest);
 
         expect(q).to.be.a('object');
         expect(q).to.have.property('rank');
@@ -200,7 +202,7 @@ describe('helper.digestQuery()', function() {
         expect(q.rank).to.have.property('$gte', 2);
         expect(q).to.not.have.property('sort');
 
-        connection.model('RequestTest').find(q, function(err, items) {
+        RequestTest.find(q, function(err, items) {
             if (err) {
                 throw err;
             }

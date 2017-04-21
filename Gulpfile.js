@@ -52,7 +52,7 @@ gulp.task('doc', ['bump'], function (done) {
         .pipe(jsdoc(done));
 });
 
-gulp.task('version', ['doc'], function (done) {
+gulp.task('version', ['doc'], function () {
     const ver = require('./package.json').version;
     return gulp.src('./docs/gen/**/*.html')
         .pipe(version({ value: ver, replaces: ['${VERSION}'] }))
