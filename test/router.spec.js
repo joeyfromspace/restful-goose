@@ -102,13 +102,30 @@ describe('router', function() {
 
     it('should return an empty array on /request-tests/?filter[no-such-attribute]=nosuchvalue GET', function (done) {
       chai.request(routerApp)
-        .get('/request-tests?filter[noSuchAttribute]=nosuchvalue')
+        .get('/request-tests?filter[no-such-attribute]=nosuchvalue')
         .end(function (err, res) {
           expect(res).to.be.json;
           expect(res.status).to.equal(200);
           expect(res.body).to.be.a('object');
           expect(res.body.data).to.be.a('array');
           expect(res.body.data.length).to.equal(0);
+          done();
+        });
+    });
+
+    it('should return results array on /request-tests?filter[simple][updated-at][$lte]=Date.now() GET', function(done) {
+      var now = Date.now();
+      chai.request(routerApp)      
+        .get('/request-tests?filter[simple][updated-at][$lte]=' + now)
+        .end(function(err, res) {
+          expect(res).to.be.json;
+          expect(res.status).to.equal(200);
+          expect(res.body).to.be.a('object');
+          expect(res.body.data).to.be.a('array');
+          var allOld = res.body.data.every(function(o) {
+            return Date.parse(o.attributes['updated-at']) <= now;
+          });
+          expect(allOld).to.equal(true);
           done();
         });
     });

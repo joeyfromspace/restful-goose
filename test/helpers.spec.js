@@ -1,6 +1,7 @@
 var helpers = require('../lib/helpers');
 var expect = require('chai').expect;
 var mongoose = require('mongoose');
+var moment = require('moment');
 var _ = require('lodash');
 
 var connection;
@@ -147,75 +148,4 @@ describe('helper.deserialize()', function() {
         done();
       });
     });
-});
-
-describe('helper.digestQuery()', function() {
-    'use strict';
-
-    before(function(done) {
-        connection = mongoose.createConnection('mongodb://localhost:27017/restful-goose-router-test');
-        connection.on('open', function() {
-            connection.model('RequestTest', RequestTestSchema);
-            connection.model('SubTest', SubTestSchema);
-            generateData(connection, count, done);
-        });
-    });
-
-    after(function(done) {
-        connection.db.dropDatabase(function() {
-            connection.close(done);
-        });
-    });
-
-    it('should return a properly formatted query object on helper.digestQuery(query)', function(done) {
-        var exampleQuery = { 'filter[simple][rank][$lte]': 7 };
-        var RequestTest = connection.model('RequestTest');
-        var q = helpers.digestQuery(exampleQuery, RequestTest);
-
-        expect(q).to.be.a('object');
-        expect(q).to.have.property('rank');
-        expect(q.rank).to.have.property('$lte');
-        expect(q.rank.$lte).to.be.a('number');
-
-        RequestTest.find(q, function(err, items) {
-            if (err) {
-                throw err;
-            }
-
-            expect(items.length).to.be.greaterThan(0);
-            expect(items.length).to.be.lessThan(count);
-            for (var i = 0; i < items.length; i++) {
-                expect(items[i].rank).to.be.lessThan(8);
-            }
-            done();
-        });
-    });
-
-    it('should return a properly formatted query object on helper.digestQuery(query) when more than one filter is present', function(done) {
-        var exampleQuery = { 'filter[simple][rank][$lte]': 8, 'filter[simple][rank][$gte]': 2, 'sort': '-createdAt' };
-        var RequestTest = connection.model('RequestTest');
-        var q = helpers.digestQuery(exampleQuery, RequestTest);
-
-        expect(q).to.be.a('object');
-        expect(q).to.have.property('rank');
-        expect(q.rank).to.have.property('$lte', 8);
-        expect(q.rank).to.have.property('$gte', 2);
-        expect(q).to.not.have.property('sort');
-
-        RequestTest.find(q, function(err, items) {
-            if (err) {
-                throw err;
-            }
-
-            expect(items.length).to.be.greaterThan(0);
-            expect(items.length).to.be.lessThan(count);
-            for (var i = 0; i < items.length; i++) {
-                expect(items[i].rank).to.be.lessThan(9);
-                expect(items[i].rank).to.be.greaterThan(1);
-            }
-            done();
-        });
-    });
-
-    
 });

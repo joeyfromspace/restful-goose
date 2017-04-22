@@ -1,6 +1,6 @@
 {
 	"name": "restful-goose",
-	"version": "2.2.6",
+	"version": "2.2.10",
 	"description": "A new improved version of your favorite API framework for mongoose/MongoDB",
 	"main": "index.js",
 	"scripts": {
